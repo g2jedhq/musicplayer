@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:padding="3dp"
+
+    >
+
+    <ImageView
+        android:id="@+id/ivPic"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="10dp"
+        android:src="@mipmap/ic_launcher"/>
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:layout_alignTop="@+id/ivPic"
+        android:layout_toRightOf="@+id/ivPic"
+        android:textColor="@color/music_title"
+        android:textSize="16sp"
+        android:text="歌名歌名"/>
+
+    <TextView
+        android:textColor="@color/artist_name"
+        android:id="@+id/tvSinger"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ivPic"
+        android:layout_alignLeft="@+id/tvName"
+        android:layout_below="@+id/tvName"
+        android:paddingBottom="3dp"
+        android:paddingTop="3dp"
+        android:text="歌手歌手"
+        android:textSize="12sp"/>
+</RelativeLayout>
