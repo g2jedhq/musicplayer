@@ -39,7 +39,7 @@ public class HotMusicFragment extends Fragment {
     }
 
     private void setAdapter(List<Music> musics) {
-        adapter = new MusicAdapter(musics, getContext());
+        adapter = new MusicAdapter(musics, getContext(),listView);
         listView.setAdapter(adapter);
     }
 

@@ -37,7 +37,7 @@ public class NewMusicFragment extends Fragment {
     }
 
     private void setAdapter(List<Music> musics) {
-        adapter = new MusicAdapter(musics,getActivity());
+        adapter = new MusicAdapter(musics,getActivity(),listView);
         listView.setAdapter(adapter);
     }
 
