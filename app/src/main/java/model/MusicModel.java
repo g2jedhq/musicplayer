@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entity.Music;
+import entity.SongInfo;
+import entity.SongUrl;
 import util.HttpUtils;
 import util.JsonParser;
 import util.UrlFactory;
@@ -57,6 +59,7 @@ public class MusicModel {
 
     /**
      * 查询热歌榜榜单
+     *
      * @param callback
      * @param offset
      * @param size
@@ -84,10 +87,42 @@ public class MusicModel {
                 }
             }
         };
-
         task.execute();//执行异步任务
+    }
 
+    /**
+     * 异步发送请求   解析json获取：  List<SongUrl>  SongInfo
+     * 在主线程中调用callback.onSongInfoLoaded()
+     * @param songId
+     * @param callback
+     */
+    public void getSongInfoBySongId(final String songId, final SongInfoCallback callback) {
+        AsyncTask<String, String, Music> task = new AsyncTask<String, String, Music>() {
+            @Override//在工作线程中发送请求  解析json
+            protected Music doInBackground(String... params) {
+                String path = UrlFactory.getSongInfoUrl(songId);
+                try {
+                    InputStream is = HttpUtils.get(path);
+                    String json = HttpUtils.isToString(is);
+                    // 解析json
+                    Music music = JsonParser.parseSongInfo(json);
+                    return music;
 
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override//主线程中调用callback回调方法
+            protected void onPostExecute(Music music) {
+                if (music != null) {
+                    callback.onSongInfoLoaded(music.getSongUrls(), music.getSongInfo());
+                } else {
+                    callback.onSongInfoLoaded(null,null);
+                }
+            }
+        };
     }
 
     public interface Callback {
@@ -100,5 +135,18 @@ public class MusicModel {
         void onMusicListLoaded(List<Music> musics);
     }
 
+    /**
+     * 访问songInfo所需要的回调接口
+     */
+    public interface SongInfoCallback {
+        /**
+         * 当音乐的基本信息加载完毕后
+         * 将会在主线程中自动执行
+         *
+         * @param urls
+         * @param info
+         */
+        void onSongInfoLoaded(List<SongUrl> urls, SongInfo info);
+    }
 
 }

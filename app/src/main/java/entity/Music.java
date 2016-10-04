@@ -1,5 +1,7 @@
 package entity;
 
+import java.util.List;
+
 /**
  * Created by Qubo on 2016/10/2.
  * 描述一首歌
@@ -20,6 +22,34 @@ public class Music {
     private String album_id;
     private String album_title;
     private String artist_name;
+    /**
+     * 同一首歌曲不同属性地址的集合
+     */
+    private List<SongUrl> songUrls;
+    /**
+     * 歌曲的详细信息
+     */
+    private SongInfo songInfo;
+
+    public Music(String artist_id, String language, String pic_big, String pic_small, String publishtime, String lrclink, String all_artist_ting_uid, String all_artist_id, String style, String song_id, String title, String author, String album_id, String album_title, String artist_name, List<SongUrl> songUrls, SongInfo songInfo) {
+        this.artist_id = artist_id;
+        this.language = language;
+        this.pic_big = pic_big;
+        this.pic_small = pic_small;
+        this.publishtime = publishtime;
+        this.lrclink = lrclink;
+        this.all_artist_ting_uid = all_artist_ting_uid;
+        this.all_artist_id = all_artist_id;
+        this.style = style;
+        this.song_id = song_id;
+        this.title = title;
+        this.author = author;
+        this.album_id = album_id;
+        this.album_title = album_title;
+        this.artist_name = artist_name;
+        this.songUrls = songUrls;
+        this.songInfo = songInfo;
+    }
 
     public Music() {
     }
@@ -40,6 +70,22 @@ public class Music {
         this.album_id = album_id;
         this.album_title = album_title;
         this.artist_name = artist_name;
+    }
+
+    public List<SongUrl> getSongUrls() {
+        return songUrls;
+    }
+
+    public void setSongUrls(List<SongUrl> songUrls) {
+        this.songUrls = songUrls;
+    }
+
+    public SongInfo getSongInfo() {
+        return songInfo;
+    }
+
+    public void setSongInfo(SongInfo songInfo) {
+        this.songInfo = songInfo;
     }
 
     public String getArtist_id() {

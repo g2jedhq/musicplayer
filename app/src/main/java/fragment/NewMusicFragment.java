@@ -5,7 +5,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.bobo.musicplayer.R;
 
@@ -13,6 +15,8 @@ import java.util.List;
 
 import adapter.MusicAdapter;
 import entity.Music;
+import entity.SongInfo;
+import entity.SongUrl;
 import model.MusicModel;
 
 /**
@@ -22,11 +26,12 @@ import model.MusicModel;
 public class NewMusicFragment extends Fragment {
     private ListView listView;
     private MusicAdapter adapter;
+    private MusicModel musicModel = new MusicModel();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_music_list, null);
         setViews(view);//初始化控件
-        MusicModel musicModel = new MusicModel();
+        setListeners();
         musicModel.findNewMusicList(new MusicModel.Callback() {
             @Override//将会在列表加载完毕后执行
             public void onMusicListLoaded(List<Music> musics) {
@@ -34,6 +39,30 @@ public class NewMusicFragment extends Fragment {
             }
         }, 0, 50);//查询新歌榜榜单数据 List<Music>
         return view;
+    }
+
+    private void setListeners() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final Music music = adapter.getItem(position);
+                musicModel.getSongInfoBySongId(music.getSong_id(), new MusicModel.SongInfoCallback() {
+                    @Override
+                    public void onSongInfoLoaded(List<SongUrl> urls, SongInfo info) {
+                        if (urls==null||info==null) {
+                            Toast.makeText(NewMusicFragment.this.getContext(), "音乐加载失败, 检查网络", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        //开始准备播放音乐
+                        music.setSongInfo(info);
+                        music.setSongUrls(urls);
+                        //获取当前需要播放的音乐的路径
+                        SongUrl songUrl = urls.get(0);
+                        String musicPath = songUrl.getShow_link();
+                    }
+                });
+            }
+        });
     }
 
     private void setAdapter(List<Music> musics) {
