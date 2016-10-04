@@ -10,6 +10,7 @@
         android:id="@+id/ivPic"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:scaleType="fitXY"
         android:layout_marginRight="10dp"
         android:src="@mipmap/ic_launcher"/>
 

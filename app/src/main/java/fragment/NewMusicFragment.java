@@ -44,4 +44,10 @@ public class NewMusicFragment extends Fragment {
     private void setViews(View view) {
         listView = (ListView) view.findViewById(R.id.listView);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        adapter.stopThread();//把adapter中的线程停掉
+    }
 }

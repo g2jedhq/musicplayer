@@ -23,6 +23,7 @@ import model.MusicModel;
 public class HotMusicFragment extends Fragment {
     private ListView listView;
     private MusicAdapter adapter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -34,16 +35,22 @@ public class HotMusicFragment extends Fragment {
             public void onMusicListLoaded(List<Music> musics) {
                 setAdapter(musics);
             }
-        },0,50 );
+        }, 0, 50);
         return view;
     }
 
     private void setAdapter(List<Music> musics) {
-        adapter = new MusicAdapter(musics, getContext(),listView);
+        adapter = new MusicAdapter(musics, getContext(), listView);
         listView.setAdapter(adapter);
     }
 
     private void setViews(View view) {
         listView = (ListView) view.findViewById(R.id.listView);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        adapter.stopThread();//把adapter中的线程停掉
     }
 }

@@ -2,7 +2,6 @@ package adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import entity.Music;
+import util.BitmapUtils;
 import util.HttpUtils;
 
 /**
@@ -44,7 +44,7 @@ public class MusicAdapter extends BaseAdapter {
     /**
      * 声明handler  显示图片
      */
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -52,10 +52,10 @@ public class MusicAdapter extends BaseAdapter {
                     ImageLoadTask imageLoadTask = (ImageLoadTask) msg.obj;
                     Bitmap bitmap = imageLoadTask.bitmap;
                     //通过listView.findViewWithTag()方法获取相应的imageView
-                    ImageView imageView = (ImageView) listView.findViewWithTag(bitmap);
-                    if (imageView !=null) {
+                    ImageView imageView = (ImageView) listView.findViewWithTag(imageLoadTask.path);
+                    if (imageView != null) {
                         if (bitmap != null) {
-                            imageView.setImageBitmap(imageLoadTask.bitmap);
+                            imageView.setImageBitmap(bitmap);
                         } else {
                             imageView.setImageResource(R.mipmap.ic_launcher);
                         }
@@ -64,7 +64,8 @@ public class MusicAdapter extends BaseAdapter {
             }
         }
     };
-    public MusicAdapter(List<Music> musics, Context context,ListView listView) {
+
+    public MusicAdapter(List<Music> musics, Context context, ListView listView) {
         this.musics = musics;
         this.context = context;
         this.listView = listView;
@@ -76,7 +77,7 @@ public class MusicAdapter extends BaseAdapter {
                 while (isLoop) {
                     if (!imageLoadTasks.isEmpty()) {
                         ImageLoadTask imageLoadTask = imageLoadTasks.remove(0);
-                        imageLoadTask.bitmap  = loadBitmap(imageLoadTask.path);//下载图片
+                        imageLoadTask.bitmap = loadBitmap(imageLoadTask.path);//下载图片
                         Message message = Message.obtain();
                         message.what = HANDLE_IMAGE_LOAD_SUCCESS;
                         message.obj = imageLoadTask;
@@ -124,7 +125,7 @@ public class MusicAdapter extends BaseAdapter {
             holder.tvSinger = (TextView) convertView.findViewById(R.id.tvSinger);
             convertView.setTag(holder);
         }
-            holder = (ViewHolder) convertView.getTag();
+        holder = (ViewHolder) convertView.getTag();
         // 组装数据和模板
         holder.tvName.setText(music.getTitle());
         holder.tvSinger.setText(music.getArtist_name());
@@ -148,6 +149,17 @@ public class MusicAdapter extends BaseAdapter {
     }
 
     /**
+     * 停止线程
+     */
+    public void stopThread() {
+        isLoop = false;
+        synchronized (workThread) {
+            //唤醒工作线程
+            workThread.notify();
+        }
+    }
+
+    /**
      * 封装一个图片下载任务
      */
     class ImageLoadTask {
@@ -163,18 +175,20 @@ public class MusicAdapter extends BaseAdapter {
 
     /**
      * 下载图片
+     *
      * @param path
      * @return
      */
     public Bitmap loadBitmap(String path) {
-        Bitmap bitmap = null;
         try {
             InputStream is = HttpUtils.get(path);
-            bitmap = BitmapFactory.decodeStream(is);
+            // BitmapFactory.decodeStream(is)
+            // Bitmap bitmap = BitmapUtils.loadBitmap(is, 50, 50);// 压缩图片
+            return BitmapUtils.loadBitmap(is,50,50);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return bitmap;
+        return null;
     }
 
 }
