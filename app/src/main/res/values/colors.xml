@@ -9,4 +9,5 @@
     <color name="divide_line">#dcd1d1</color>
     <color name="music_title">#151414</color>
     <color name="artist_name">#383838</color>
+    <color name="cm_music_title">#ffffff</color>
 </resources>

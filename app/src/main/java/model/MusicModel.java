@@ -123,6 +123,7 @@ public class MusicModel {
                 }
             }
         };
+        task.execute();
     }
 
     public interface Callback {

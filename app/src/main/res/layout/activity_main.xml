@@ -1,62 +1,92 @@
-<LinearLayout xmlns:tools="http://schemas.android.com/tools"
-                xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-              android:orientation="vertical"
     >
 
     <TextView
         android:id="@+id/tvHeader"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#5F9F9F"
+        android:background="@color/text_background"
         android:gravity="center"
         android:text="音乐列表"
-        android:backgroundTint="@color/text_background"
         android:textColor="#ffffff"
-        android:textSize="20sp" />
+        android:textSize="20sp"/>
 
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="match_parent"
         android:layout_height="40dp"
+        android:layout_below="@+id/tvHeader"
         android:orientation="horizontal"
         >
 
         <RadioButton
             android:id="@+id/radioNew"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
             android:checked="true"
             android:gravity="center"
-            android:button="@null"
-            android:textColor="@drawable/tab_text_color"
-            android:text="新歌榜" />
+            android:text="新歌榜"
+            android:textColor="@drawable/tab_text_color"/>
 
         <RadioButton
             android:id="@+id/radioHot"
             android:layout_width="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:button="@null"
-            android:textColor="@drawable/tab_text_color"
+            android:checked="false"
+            android:gravity="center"
             android:text="热歌榜"
-            android:checked="false"/>
+            android:textColor="@drawable/tab_text_color"/>
 
     </RadioGroup>
+
     <TextView
+        android:id="@+id/tvLine"
         android:layout_width="match_parent"
-        android:background="@color/divide_line"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp"
+        android:layout_below="@+id/radioGroup"
+        android:background="@color/divide_line"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/tvLine"
+        android:layout_above="@+id/bottomBar"
         >
 
     </android.support.v4.view.ViewPager>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/text_background"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        >
+
+        <ui.CircleImageView
+            android:id="@+id/ivCMPic"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@mipmap/ic_launcher"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:id="@+id/tvCMTitle"
+            android:text="当前播放歌曲的名称"
+            android:layout_marginLeft="10dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/cm_music_title"
+            android:textSize="16sp"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+</RelativeLayout>
