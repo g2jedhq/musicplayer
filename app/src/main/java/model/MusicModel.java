@@ -1,17 +1,21 @@
 package model;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import entity.LrcLine;
 import entity.Music;
 import entity.SongInfo;
 import entity.SongUrl;
 import util.HttpUtils;
 import util.JsonParser;
+import util.LrcUtils;
 import util.UrlFactory;
 import util.XmlParser;
 
@@ -20,6 +24,63 @@ import util.XmlParser;
  * 音乐相关的业务类
  */
 public class MusicModel {
+    /**
+     * 下载歌词
+     * @param lrcUrl
+     * @param callback
+     */
+    public void downloadLrc(final Context context , final String lrcUrl, final LrcCallback callback) {
+        //异步发送http请求
+        new AsyncTask<String, String, List<LrcLine>>() {
+            @Override
+            protected List<LrcLine> doInBackground(String... params) {
+                //下载歌词
+
+//                try {
+//                    InputStream is = HttpUtils.get(lrcUrl);
+//                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+//                    String line;
+//                    while ((line = reader.readLine()) != null) {// 按行读取输入流
+//                        //[00:02.21]独角戏
+//                        //[00:04.20]演唱：许茹芸
+//                        if ("".equals(line)) {
+//                            continue;// 结束本次循环，开始下一次
+//                        }
+//                        String time = line.substring(1,line.indexOf("]"));// 左闭右开
+//                        String content = line.substring(line.indexOf("]") + 1);
+//                        LrcLine lrcLine = new LrcLine(time,content);
+//                        lrcLines.add(lrcLine);
+//                    }
+//                    return lrcLines;
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+                try {
+                    // 先从文件中加载
+                    String fileName = lrcUrl.substring(lrcUrl.lastIndexOf("/") + 1);
+                    File targetFile = new File(context.getCacheDir(),fileName);
+                    List<LrcLine> lrcLines = LrcUtils.parseLrc(targetFile);
+                    if (lrcLines!=null) {//已经读取到缓存的歌词
+                        return lrcLines;//不需要重新下载
+                    }
+                    // 没有缓存的歌词，从输入流中加载
+                    InputStream is = HttpUtils.get(lrcUrl);
+                    lrcLines = LrcUtils.parseLrc(is, targetFile);
+                    return lrcLines;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override//主线程中执行   调用回调方法  返回list
+            protected void onPostExecute(List<LrcLine> lrcLines) {
+                callback.onLrcLoaded(lrcLines);
+            }
+        }.execute();
+    }
+
+
     /**
      * 查询新歌榜榜单
      *
@@ -93,6 +154,7 @@ public class MusicModel {
     /**
      * 异步发送请求   解析json获取：  List<SongUrl>  SongInfo
      * 在主线程中调用callback.onSongInfoLoaded()
+     *
      * @param songId
      * @param callback
      */
@@ -119,11 +181,38 @@ public class MusicModel {
                 if (music != null) {
                     callback.onSongInfoLoaded(music.getSongUrls(), music.getSongInfo());
                 } else {
-                    callback.onSongInfoLoaded(null,null);
+                    callback.onSongInfoLoaded(null, null);
                 }
             }
         };
         task.execute();
+    }
+
+    /**
+     * 根据关键字查询音乐结果列表
+     * @param key
+     * @param callback
+     */
+    public void searchMusic(final String key, final Callback callback){
+        new AsyncTask<String, String, List<Music>>(){
+            @Override
+            protected List<Music> doInBackground(String[] params) {
+                try {
+                    String url = UrlFactory.getSearchMusicUrl(key, 1, 30);
+                    InputStream is = HttpUtils.get(url);
+                    String json = HttpUtils.isToString(is);
+                    //解析json
+                    List<Music> musics = JsonParser.parseSearchResult(json);
+                    return musics;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+            protected void onPostExecute(List<Music> result) {
+                callback.onMusicListLoaded(result);
+            }
+        }.execute();
     }
 
     public interface Callback {
@@ -148,6 +237,18 @@ public class MusicModel {
          * @param info
          */
         void onSongInfoLoaded(List<SongUrl> urls, SongInfo info);
+    }
+
+    /**
+     * 歌词相关的回调接口
+     */
+    public interface LrcCallback {
+        /**
+         * 歌词下载完成后 回调该方法
+         *
+         * @param lrcLines
+         */
+        void onLrcLoaded(List<LrcLine> lrcLines);
     }
 
 }

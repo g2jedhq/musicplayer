@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -30,7 +31,7 @@ public class NewMusicFragment extends Fragment {
     private MusicAdapter adapter;
     private MusicModel musicModel = new MusicModel();
     private PlayMusicService.MusicBinder musicBinder;
-    private List<Music> musics ;
+    private List<Music> musics;
 
 
     public void setMusicBinder(PlayMusicService.MusicBinder musicBinder) {
@@ -48,11 +49,58 @@ public class NewMusicFragment extends Fragment {
                 NewMusicFragment.this.musics = musics;
                 setAdapter(musics);
             }
-        }, 0, 50);//查询新歌榜榜单数据 List<Music>
+        }, 0, 20);//查询新歌榜榜单数据 List<Music>
         return view;
     }
 
     private void setListeners() {
+        //listView的滚动监听
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            private boolean isBottom;
+
+            /**
+             * 当滚动状态改变时执行
+             */
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                switch (scrollState) {
+                    case SCROLL_STATE_FLING:
+                        break;
+                    case SCROLL_STATE_IDLE:
+                        //如果已经到底了  加载下一页
+                        if (isBottom) {
+                            musicModel.findNewMusicList(new MusicModel.Callback() {
+                                @Override
+                                public void onMusicListLoaded(List<Music> ms) {
+                                    //把新数据添加到旧数据集合中 更新adapter
+                                    if (ms.isEmpty()) {//没有数据
+                                        Toast.makeText(NewMusicFragment.this.getActivity(), "没有更多的歌曲", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    musics.addAll(ms);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            }, musics.size(), 20);
+                        }
+                        break;
+                    case SCROLL_STATE_TOUCH_SCROLL:
+                        break;
+                }
+
+            }
+
+            @Override//当滚动时执行该方法
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (firstVisibleItem + visibleItemCount == totalItemCount) {
+                    // 在一屏中：第一个可见子项的位置+可见子项的数量=总的子项的数量
+                    isBottom = true;
+                } else {
+                    isBottom = false;
+                }
+            }
+        });
+
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

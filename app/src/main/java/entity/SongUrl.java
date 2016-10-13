@@ -30,7 +30,7 @@ public class SongUrl {
      */
     private String file_bitrate;
     /**
-     * 歌曲的下载链接
+     *
      */
     private String file_link;
 

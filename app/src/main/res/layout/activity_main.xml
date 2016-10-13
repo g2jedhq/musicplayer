@@ -14,6 +14,21 @@
         android:textColor="#ffffff"
         android:textSize="20sp"/>
 
+    <Button
+        android:id="@+id/btnSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvHeader"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/tvHeader"
+        android:background="@null"
+        android:gravity="center"
+        android:onClick="doClick"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="搜索"
+        android:textColor="#ffffff"/>
+
     <RadioGroup
         android:id="@+id/radioGroup"
         android:layout_width="match_parent"
@@ -57,8 +72,8 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tvLine"
         android:layout_above="@+id/bottomBar"
+        android:layout_below="@+id/tvLine"
         >
 
     </android.support.v4.view.ViewPager>
@@ -73,20 +88,300 @@
         android:padding="5dp"
         >
 
-        <ui.CircleImageView
+        <uic.CircleImageView
             android:id="@+id/ivCMPic"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@mipmap/ic_launcher"/>
+            android:nestedScrollingEnabled="true"
+            android:onClick="doClick"
+            android:src="@mipmap/ic_launcher"
+            />
+
         <TextView
-            android:layout_width="wrap_content"
             android:id="@+id/tvCMTitle"
-            android:text="当前播放歌曲的名称"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:gravity="center_vertical"
+            android:text="当前播放歌曲的名称"
             android:textColor="@color/cm_music_title"
-            android:textSize="16sp"
-            android:layout_height="match_parent"/>
+            android:textSize="16sp"/>
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlPlayMusic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        >
+
+        <ImageView
+            android:id="@+id/ivPMBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/default_music_background"/>
+
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="@dimen/width_height"
+            android:layout_height="@dimen/width_height"
+            android:layout_marginLeft="@dimen/music_duration_margin"
+            android:layout_marginTop="@dimen/margin_top"
+            android:nestedScrollingEnabled="true"
+            android:onClick="doClick"
+            android:src="@mipmap/img_back"/>
+
+        <ImageView
+            android:id="@+id/ivPush"
+            android:layout_width="@dimen/width_height"
+            android:layout_height="@dimen/width_height"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/music_duration_margin"
+            android:layout_marginTop="@dimen/margin_top"
+            android:src="@mipmap/title_share_press"/>
+
+        <TextView
+            android:id="@+id/tvPMTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="14dp"
+            android:text="Because of you"
+            android:textColor="#ffffff"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/tvPMSinger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvPMTitle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="Kelly Clarkson"
+            android:textColor="#ffffff"/>
+
+        <ui.CircleImageView
+            android:id="@+id/ivPMAlbum"
+            android:layout_width="@dimen/album_pic_size"
+            android:layout_height="@dimen/album_pic_size"
+            android:layout_below="@+id/tvPMSinger"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/margin_top"
+            android:src="@mipmap/default_music_pic"/>
+
+
+        <TextView
+            android:id="@+id/tvPMLrc0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ivPMAlbum"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/margin_top"
+            android:text="Because Of You - Kelly Clarkson"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/lrc_size"/>
+
+        <TextView
+            android:id="@+id/tvPMLrc1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvPMLrc0"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="4dp"
+            android:text="Because Of You - Kelly Clarkson"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/lrc_size"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_below="@id/tvPMLrc1"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/ivDownload"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerHorizontal="true"
+                android:src="@android:drawable/stat_sys_download"
+                android:onClick="doClick"
+                android:nestedScrollingEnabled="false"/>
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="40dp"
+                android:layout_toLeftOf="@+id/ivDownload"
+                android:src="@android:drawable/btn_star_big_on"
+                android:onClick="doClick"/>
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="40dp"
+                android:layout_toRightOf="@+id/ivDownload"
+                android:src="@android:drawable/ic_menu_share"
+                android:onClick="doClick"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/llPMInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/rlPalyControl"
+            android:layout_marginBottom="@dimen/play_layout_margin"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvPMCurrentTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/music_duration_margin"
+                android:text="01:10"
+                android:textColor="#ffffff"/>
+            <!--style="@style/Widget.SeekBar.Normal"-->
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:indeterminate="false"
+                />
+
+            <TextView
+                android:id="@+id/tvPMTotalTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/music_duration_margin"
+                android:text="03:14"
+                android:textColor="#ffffff"/>
+
+
+        </LinearLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/rlPalyControl"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/ivPlayModel"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/bottom_button_margin"
+                android:onClick="doClick"
+                android:src="@mipmap/playmode_normal"/>
+
+            <ui.CircleImageView
+                android:id="@+id/ivPMPrevious"
+                android:layout_width="@dimen/next_previous_size"
+                android:layout_height="@dimen/next_previous_size"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/play_button_margin"
+                android:layout_toLeftOf="@+id/ivPMPlayOrPause"
+                android:onClick="doClick"
+                android:src="@mipmap/appwidget_icon_play_prev_normal"/>
+
+            <ui.CircleImageView
+                android:id="@+id/ivPMPlayOrPause"
+                android:layout_width="@dimen/play_size"
+                android:layout_height="@dimen/play_size"
+                android:layout_centerInParent="true"
+                android:onClick="doClick"
+                android:src="@mipmap/appwidget_icon_play_normal"
+                android:tint="#4cc64c"/>
+
+            <ui.CircleImageView
+                android:id="@+id/ivPMNext"
+                android:layout_width="@dimen/next_previous_size"
+                android:layout_height="@dimen/next_previous_size"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/play_button_margin"
+                android:layout_toRightOf="@+id/ivPMPlayOrPause"
+                android:onClick="doClick"
+                android:src="@mipmap/appwidget_icon_play_next_normal"/>
+
+            <ImageView
+                android:id="@+id/ivPlayList"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/bottom_button_margin"
+                android:onClick="doClick"
+                android:src="@mipmap/music_list"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlSearchMusic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:visibility="invisible">
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/text_background">
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:gravity="center"
+                android:onClick="doClick"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="取消"
+                android:textColor="#ffffff"/>
+
+            <EditText
+                android:id="@+id/etKeyword"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:ems="10"
+                android:hint="搜索关键字..."
+                android:textColorHint="#ffffff">
+            </EditText>
+
+            <Button
+                android:id="@+id/btnSearchMusic"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:gravity="center"
+                android:onClick="doClick"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="搜索"
+                android:textColor="#ffffff"/>
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/lvSearchResult"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/linearLayout1">
+        </ListView>
+    </RelativeLayout>
 
 </RelativeLayout>

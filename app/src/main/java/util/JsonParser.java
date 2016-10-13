@@ -45,6 +45,17 @@ public class JsonParser {
         music.setSongInfo(songInfo);
         return music;
     }
+    /**
+     * 解析搜索结果列表
+     * @param json  {  song_list  : [{},{},{},{}]  }
+     * @return 搜到的歌曲的集合
+     */
+    public static List<Music> parseSearchResult(String json) {
+        JSONObject jsonObject = JSON.parseObject(json);
+        JSONArray song_list = jsonObject.getJSONArray("song_list");
+        List<Music> musics = JSON.parseArray(song_list.toString(),Music.class);
+        return musics;
+    }
 
 
 }

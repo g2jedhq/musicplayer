@@ -30,6 +30,15 @@ public class Music {
      * 歌曲的详细信息
      */
     private SongInfo songInfo;
+    private List<LrcLine> lrcLines;
+
+    public List<LrcLine> getLrcLines() {
+        return lrcLines;
+    }
+
+    public void setLrcLines(List<LrcLine> lrcLines) {
+        this.lrcLines = lrcLines;
+    }
 
     public Music(String artist_id, String language, String pic_big, String pic_small, String publishtime, String lrclink, String all_artist_ting_uid, String all_artist_id, String style, String song_id, String title, String author, String album_id, String album_title, String artist_name, List<SongUrl> songUrls, SongInfo songInfo) {
         this.artist_id = artist_id;
