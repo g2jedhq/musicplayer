@@ -21,6 +21,8 @@ public class GlobalConsts {
      * 时长
      */
     public static final String MUSIC_DURATION = "MUSIC_DURATION";
-    public static final String ACTION_NEXT = "ACTION_NEXT";
-    public static final String ACTION_PREVIOUS= "ACTION_PREVIOUS";
+    public static final String ACTION_NEXT = "ACTION_NEXT";// ctrl+shift+u 大小写转
+    public static final String PLAYMODE_NORMAL= "PLAYMODE_NORMAL";
+    public static final String PLAYMODE_SHUFFLE= "PLAYMODE_SHUFFLE";
+    public static final String PLAYMODE_REPEAT_CURRENT= "PLAYMODE_REPEAT_CURRENT";
 }

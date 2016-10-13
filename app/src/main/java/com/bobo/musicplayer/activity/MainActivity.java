@@ -60,6 +60,7 @@ import service.DownloadService;
 import service.PlayMusicService;
 import util.BitmapUtils;
 import util.GlobalConsts;
+import util.LogUtil;
 
 public class MainActivity extends FragmentActivity {
     private RadioGroup radioGroup;
@@ -105,6 +106,10 @@ public class MainActivity extends FragmentActivity {
     private EditText etKeyword;
     private ListView lvSearchResult;
     private Button btnSearch;
+    int i = 1;
+    int j = 0;
+    // 播放模式：顺序、随机、单曲循环
+    int[] modeRes = {R.mipmap.playmode_normal, R.mipmap.playmode_shuffle, R.mipmap.playmode_repeat_current};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +162,7 @@ public class MainActivity extends FragmentActivity {
             case R.id.btnSearch:  //显示搜索界面
                 btnSearch.setEnabled(false);
                 rlSearchMusic.setVisibility(View.VISIBLE);
-                TranslateAnimation animation = new TranslateAnimation(0,0,-rlSearchMusic.getHeight(),0);
+                TranslateAnimation animation = new TranslateAnimation(0, 0, -rlSearchMusic.getHeight(), 0);
                 animation.setDuration(250);
                 rlSearchMusic.startAnimation(animation);
                 break;
@@ -167,13 +172,31 @@ public class MainActivity extends FragmentActivity {
             case R.id.btnCancel: //收起搜索界面
                 btnSearch.setEnabled(true);
                 rlSearchMusic.setVisibility(View.INVISIBLE);
-                animation = new TranslateAnimation(0,0,0,-rlSearchMusic.getHeight());
+                animation = new TranslateAnimation(0, 0, 0, -rlSearchMusic.getHeight());
                 animation.setDuration(250);
                 rlSearchMusic.startAnimation(animation);
-            break;
+                break;
             case R.id.ivDownload:// 下载歌曲
                 downloadMusic();
-
+                break;
+            case R.id.ivPlayModel:
+                j = i % 3;
+                ivPlayModel.setImageResource(modeRes[j]);
+                switch (j) {
+                    case 0:// 顺序
+                        app.setPlayMode(GlobalConsts.PLAYMODE_NORMAL);
+                        Toast.makeText(MainActivity.this, "顺序播放", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1:// 随机
+                        app.setPlayMode(GlobalConsts.PLAYMODE_SHUFFLE);
+                        Toast.makeText(MainActivity.this, "随机播放", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 2:// 单曲循环
+                        app.setPlayMode(GlobalConsts.PLAYMODE_REPEAT_CURRENT);
+                        Toast.makeText(MainActivity.this, "单曲循环", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                i++;
                 break;
         }
     }
@@ -183,9 +206,9 @@ public class MainActivity extends FragmentActivity {
         final List<SongUrl> songUrls = music.getSongUrls();
         //把集合中的file_size数据 解析为字符串数组
         String[] data = new String[songUrls.size()];
-        for(int i=0;i<songUrls.size();i++) {
+        for (int i = 0; i < songUrls.size(); i++) {
             SongUrl songUrl = songUrls.get(i);
-            double fileSize = 100.0*Integer.parseInt(songUrl.getFile_size())/1024/1024;
+            double fileSize = 100.0 * Integer.parseInt(songUrl.getFile_size()) / 1024 / 1024;
             //fileSize :  123.234234234
             data[i] = Math.floor(fileSize) / 100 + "M";
         }
@@ -198,9 +221,9 @@ public class MainActivity extends FragmentActivity {
                         SongUrl songUrl = songUrls.get(which);
                         //启动Service执行下载操作
                         Intent intent = new Intent(MainActivity.this, DownloadService.class);
-                        intent.putExtra("url",songUrl.getShow_link());
-                        intent.putExtra("title",music.getTitle());
-                        intent.putExtra("bit",songUrl.getFile_bitrate());
+                        intent.putExtra("url", songUrl.getShow_link());
+                        intent.putExtra("title", music.getTitle());
+                        intent.putExtra("bit", songUrl.getFile_bitrate());
                         MainActivity.this.startService(intent);
                     }
                 });
@@ -232,7 +255,17 @@ public class MainActivity extends FragmentActivity {
         textViews[0].setText("");
         textViews[1].setText("");
         animator.end();// 结束动画
-        app.previousMusic();
+        switch (app.getPlayMode()) {
+            case GlobalConsts.PLAYMODE_NORMAL:
+                app.previousMusic();
+                break;
+            case GlobalConsts.PLAYMODE_SHUFFLE:
+                app.shuffle();
+                break;
+            case GlobalConsts.PLAYMODE_REPEAT_CURRENT:
+                break;
+        }
+
         final Music music = app.getCurrentMusic();
         musicModel.getSongInfoBySongId(music.getSong_id(), new MusicModel.SongInfoCallback() {
             @Override
@@ -254,7 +287,17 @@ public class MainActivity extends FragmentActivity {
         textViews[0].setText("");
         textViews[1].setText("");
         animator.end();// 结束动画
-        app.nextMusic();
+        switch (app.getPlayMode()) {
+            case GlobalConsts.PLAYMODE_NORMAL:
+                app.nextMusic();
+                break;
+            case GlobalConsts.PLAYMODE_SHUFFLE:
+                app.shuffle();
+                break;
+            case GlobalConsts.PLAYMODE_REPEAT_CURRENT:
+                break;
+        }
+
         final Music music1 = app.getCurrentMusic();
         musicModel.getSongInfoBySongId(music1.getSong_id(), new MusicModel.SongInfoCallback() {
             @Override
@@ -405,7 +448,7 @@ public class MainActivity extends FragmentActivity {
                 musicModel.getSongInfoBySongId(music.getSong_id(), new MusicModel.SongInfoCallback() {
                     @Override
                     public void onSongInfoLoaded(List<SongUrl> urls, SongInfo info) {
-                        if (urls==null||info==null) {
+                        if (urls == null || info == null) {
                             Toast.makeText(MainActivity.this, "无法加载歌曲，请检查网络！", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -531,6 +574,9 @@ public class MainActivity extends FragmentActivity {
      * @param context
      */
     private void setStartPlay(Context context) {
+        if (animator!=null) {
+            animator.end();//TODO 测试动画
+        }
         // 显示暂停按钮
         ivPMPlayOrPause.setImageResource(R.mipmap.appwidget_icon_pause_normal);
         //获取到当前正在播放的music对象
@@ -547,7 +593,10 @@ public class MainActivity extends FragmentActivity {
         //        tvPMSinger.setText(music.getArtist_name());
         tvPMSinger.setText(music.getSongInfo().getAuthor());
         //更新专辑图片ivPMAlbum
-        String albumPath = music.getSongInfo().getAlbum_500_500();
+//        String albumPath = music.getSongInfo().getAlbum_500_500();
+        String albumPath = music.getSongInfo().getPic_radio();
+        LogUtil.i("TAG","getAlbum_500_500()="+albumPath);
+        // 通过输入流直接加载
         BitmapUtils.loadBitmap(context, albumPath, 0, 0, new BitmapUtils.BitmapCallback() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap) {
@@ -559,12 +608,14 @@ public class MainActivity extends FragmentActivity {
             }
         });
         //更新背景图片ivPMBackground
-        String backgroundPath = music.getSongInfo().getArtist_480_800();
+//        String backgroundPath = music.getSongInfo().getArtist_480_800();
+        String backgroundPath = music.getSongInfo().getArtist_500_500();
+        LogUtil.i("TAG","getArtist_480_800()="+backgroundPath);
         if ("".equals(backgroundPath)) {
-            backgroundPath = albumPath;
+            backgroundPath = music.getSongInfo().getArtist_640_1136();
         }
         if ("".equals(backgroundPath)) {
-            backgroundPath = music.getPic_big();
+            backgroundPath = music.getSongInfo().getArtist_480_800();
         }
         // 显示背景图片
         BitmapUtils.loadBitmap(context, backgroundPath, 100, 100, new BitmapUtils.BitmapCallback() {
