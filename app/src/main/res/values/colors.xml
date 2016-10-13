@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="text_background">#7093DB</color>
+    <color name="text_background">#26c221</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
@@ -10,4 +10,5 @@
     <color name="music_title">#151414</color>
     <color name="artist_name">#383838</color>
     <color name="cm_music_title">#ffffff</color>
+    <color name="cm_music_singer">#bab9b9</color>
 </resources>

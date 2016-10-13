@@ -26,41 +26,42 @@ import util.XmlParser;
 public class MusicModel {
     /**
      * 下载歌词
+     *
      * @param lrcUrl
      * @param callback
      */
-    public void downloadLrc(final Context context , final String lrcUrl, final LrcCallback callback) {
+    public void downloadLrc(final Context context, final String lrcUrl, final LrcCallback callback) {
         //异步发送http请求
         new AsyncTask<String, String, List<LrcLine>>() {
             @Override
             protected List<LrcLine> doInBackground(String... params) {
                 //下载歌词
 
-//                try {
-//                    InputStream is = HttpUtils.get(lrcUrl);
-//                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-//                    String line;
-//                    while ((line = reader.readLine()) != null) {// 按行读取输入流
-//                        //[00:02.21]独角戏
-//                        //[00:04.20]演唱：许茹芸
-//                        if ("".equals(line)) {
-//                            continue;// 结束本次循环，开始下一次
-//                        }
-//                        String time = line.substring(1,line.indexOf("]"));// 左闭右开
-//                        String content = line.substring(line.indexOf("]") + 1);
-//                        LrcLine lrcLine = new LrcLine(time,content);
-//                        lrcLines.add(lrcLine);
-//                    }
-//                    return lrcLines;
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+                //                try {
+                //                    InputStream is = HttpUtils.get(lrcUrl);
+                //                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                //                    String line;
+                //                    while ((line = reader.readLine()) != null) {// 按行读取输入流
+                //                        //[00:02.21]独角戏
+                //                        //[00:04.20]演唱：许茹芸
+                //                        if ("".equals(line)) {
+                //                            continue;// 结束本次循环，开始下一次
+                //                        }
+                //                        String time = line.substring(1,line.indexOf("]"));// 左闭右开
+                //                        String content = line.substring(line.indexOf("]") + 1);
+                //                        LrcLine lrcLine = new LrcLine(time,content);
+                //                        lrcLines.add(lrcLine);
+                //                    }
+                //                    return lrcLines;
+                //                } catch (IOException e) {
+                //                    e.printStackTrace();
+                //                }
                 try {
                     // 先从文件中加载
                     String fileName = lrcUrl.substring(lrcUrl.lastIndexOf("/") + 1);
-                    File targetFile = new File(context.getCacheDir(),fileName);
+                    File targetFile = new File(context.getCacheDir(), fileName);
                     List<LrcLine> lrcLines = LrcUtils.parseLrc(targetFile);
-                    if (lrcLines!=null) {//已经读取到缓存的歌词
+                    if (lrcLines != null) {//已经读取到缓存的歌词
                         return lrcLines;//不需要重新下载
                     }
                     // 没有缓存的歌词，从输入流中加载
@@ -190,25 +191,47 @@ public class MusicModel {
 
     /**
      * 根据关键字查询音乐结果列表
+     *
      * @param key
      * @param callback
      */
-    public void searchMusic(final String key, final Callback callback){
-        new AsyncTask<String, String, List<Music>>(){
+    public void searchMusic(final String key, final Callback callback) {
+        new AsyncTask<String, String, List<Music>>() {
             @Override
             protected List<Music> doInBackground(String[] params) {
+                String url = UrlFactory.getSearchMusicUrl(key, 1, 30);
+                InputStream is;
                 try {
-                    String url = UrlFactory.getSearchMusicUrl(key, 1, 30);
-                    InputStream is = HttpUtils.get(url);
+                    is = HttpUtils.get(url);
                     String json = HttpUtils.isToString(is);
                     //解析json
                     List<Music> musics = JsonParser.parseSearchResult(json);
+                    if (musics != null) {
+                        for (Music music : musics) {
+                            String title = music.getTitle();// "title": "最炫<em>小苹果</em>",// "title": "<em>小苹果</em>c调伴奏",
+                            if (title.contains("<em>")) {
+                                String[] array = title.split("/");
+                                String t1 = "";
+                                for (String arr : array) {
+                                    t1 += arr;
+                                }
+                                String[] array1 = t1.split("<em>");
+                                String t2 = "";
+                                for (String arr1 : array1) {
+                                    t2 += arr1;
+                                }
+                                music.setTitle(t2);
+                            }
+                        }
+                    }
                     return musics;
-                } catch (Exception e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
+
                 return null;
             }
+
             protected void onPostExecute(List<Music> result) {
                 callback.onMusicListLoaded(result);
             }

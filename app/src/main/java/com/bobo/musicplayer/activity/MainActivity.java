@@ -106,6 +106,11 @@ public class MainActivity extends FragmentActivity {
     private EditText etKeyword;
     private ListView lvSearchResult;
     private Button btnSearch;
+    private ImageView bbIVPlayList;
+    private ImageView bbIVNext;
+    private ImageView bbIVPlayOrPause;
+    private TextView tvCMSinger;
+    private SeekBar bbSeekBar;
     int i = 1;
     int j = 0;
     // 播放模式：顺序、随机、单曲循环
@@ -122,7 +127,7 @@ public class MainActivity extends FragmentActivity {
         musicModel = new MusicModel();
         app = (MusicApplication) getApplication();
         //控件初始化
-        setViews();
+        initViews();
         //给viewPager设置适配器
         setViewPagerAdapter();
         //实现tab标签与viewpager的联动
@@ -145,59 +150,81 @@ public class MainActivity extends FragmentActivity {
                 previous();
                 break;
             case R.id.ivPMPlayOrPause:// 播放或暂停
-                musicBinder.playOrPause();
-                if (musicBinder.isPlaying) {
-                    // 开始播放，显示暂停
-                    ivPMPlayOrPause.setImageResource(R.mipmap.appwidget_icon_pause_normal);
-                    animator.resume();//恢复动画
-                } else {
-                    // 已经暂停，显示播放
-                    ivPMPlayOrPause.setImageResource(R.mipmap.appwidget_icon_play_normal);
-                    animator.pause();//暂停动画
-                }
+                playOrPause();
+                break;
+            case R.id.bbIVPlayOrPause:// 播放或暂停
+                playOrPause();
                 break;
             case R.id.ivPMNext:// 播放下一首
                 next();
                 break;
+            case R.id.bbIVNext:// 播放下一首
+                next();
+                break;
             case R.id.btnSearch:  //显示搜索界面
-                btnSearch.setEnabled(false);
-                rlSearchMusic.setVisibility(View.VISIBLE);
-                TranslateAnimation animation = new TranslateAnimation(0, 0, -rlSearchMusic.getHeight(), 0);
-                animation.setDuration(250);
-                rlSearchMusic.startAnimation(animation);
+                showSearchLayout();
                 break;
             case R.id.btnSearchMusic: //搜索音乐
                 searchMusic();
                 break;
             case R.id.btnCancel: //收起搜索界面
-                btnSearch.setEnabled(true);
-                rlSearchMusic.setVisibility(View.INVISIBLE);
-                animation = new TranslateAnimation(0, 0, 0, -rlSearchMusic.getHeight());
-                animation.setDuration(250);
-                rlSearchMusic.startAnimation(animation);
+                hideSearchLayout();
                 break;
             case R.id.ivDownload:// 下载歌曲
                 downloadMusic();
                 break;
             case R.id.ivPlayModel:
-                j = i % 3;
-                ivPlayModel.setImageResource(modeRes[j]);
-                switch (j) {
-                    case 0:// 顺序
-                        app.setPlayMode(GlobalConsts.PLAYMODE_NORMAL);
-                        Toast.makeText(MainActivity.this, "顺序播放", Toast.LENGTH_SHORT).show();
-                        break;
-                    case 1:// 随机
-                        app.setPlayMode(GlobalConsts.PLAYMODE_SHUFFLE);
-                        Toast.makeText(MainActivity.this, "随机播放", Toast.LENGTH_SHORT).show();
-                        break;
-                    case 2:// 单曲循环
-                        app.setPlayMode(GlobalConsts.PLAYMODE_REPEAT_CURRENT);
-                        Toast.makeText(MainActivity.this, "单曲循环", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-                i++;
+                changePlayMode();
                 break;
+        }
+    }
+
+    private void changePlayMode() {
+        j = i % 3;
+        ivPlayModel.setImageResource(modeRes[j]);
+        switch (j) {
+            case 0:// 顺序
+                app.setPlayMode(GlobalConsts.PLAYMODE_NORMAL);
+                Toast.makeText(MainActivity.this, "顺序播放", Toast.LENGTH_SHORT).show();
+                break;
+            case 1:// 随机
+                app.setPlayMode(GlobalConsts.PLAYMODE_SHUFFLE);
+                Toast.makeText(MainActivity.this, "随机播放", Toast.LENGTH_SHORT).show();
+                break;
+            case 2:// 单曲循环
+                app.setPlayMode(GlobalConsts.PLAYMODE_REPEAT_CURRENT);
+                Toast.makeText(MainActivity.this, "单曲循环", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        i++;
+    }
+
+    private void hideSearchLayout() {
+        btnSearch.setEnabled(true);
+        rlSearchMusic.setVisibility(View.INVISIBLE);
+        TranslateAnimation animation1 = new TranslateAnimation(0, 0, 0, -rlSearchMusic.getHeight());
+        animation1.setDuration(250);
+        rlSearchMusic.startAnimation(animation1);
+    }
+
+    private void showSearchLayout() {
+        btnSearch.setEnabled(false);
+        rlSearchMusic.setVisibility(View.VISIBLE);
+        TranslateAnimation animation = new TranslateAnimation(0, 0, -rlSearchMusic.getHeight(), 0);
+        animation.setDuration(250);
+        rlSearchMusic.startAnimation(animation);
+    }
+
+    private void playOrPause() {
+        musicBinder.playOrPause();
+        if (musicBinder.isPlaying) {
+            // 开始播放，显示暂停
+            bbIVPlayOrPause.setImageResource(R.mipmap.appwidget_icon_pause_normal);
+            animator.resume();//恢复动画
+        } else {
+            // 已经暂停，显示播放
+            bbIVPlayOrPause.setImageResource(R.mipmap.appwidget_icon_play_normal);
+            animator.pause();//暂停动画
         }
     }
 
@@ -286,6 +313,9 @@ public class MainActivity extends FragmentActivity {
     private void next() {
         textViews[0].setText("");
         textViews[1].setText("");
+        if (animator== null) {
+            return;
+        }
         animator.end();// 结束动画
         switch (app.getPlayMode()) {
             case GlobalConsts.PLAYMODE_NORMAL:
@@ -393,7 +423,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * 控件初始化
      */
-    private void setViews() {
+    private void initViews() {
         radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         rbNew = (RadioButton) findViewById(R.id.radioNew);
         rbHot = (RadioButton) findViewById(R.id.radioHot);
@@ -421,6 +451,25 @@ public class MainActivity extends FragmentActivity {
         lvSearchResult = (ListView) findViewById(R.id.lvSearchResult);
         etKeyword = (EditText) findViewById(R.id.etKeyword);
         btnSearch = (Button) findViewById(R.id.btnSearch);
+        bbIVPlayList = (ImageView) findViewById(R.id.bbIVPlayList);
+        bbIVNext = (ImageView) findViewById(R.id.bbIVNext);
+        bbIVPlayOrPause = (ImageView) findViewById(R.id.bbIVPlayOrPause);
+        tvCMSinger = (TextView) findViewById(R.id.tvCMSinger);
+        bbSeekBar = (SeekBar) findViewById(R.id.bbSeekBar);
+        bbIVPlayOrPause.setColorFilter(Color.WHITE);
+        bbIVNext.setColorFilter(Color.WHITE);
+        bbIVPlayList.setColorFilter(Color.WHITE);
+        tvCMSinger.setText("");
+        tvCMTitle.setText("");
+        tvPMTitle.setText("");
+        tvPMSinger.setText("");
+        tvPMCurrentTime.setText("");
+        tvPMTotalTime.setText("");
+        tvPMLrc0.setText("");
+        tvPMLrc1.setText("");
+//        if ( app.getMusicPlayList()==null) {
+//            rlPlayMusic.setEnabled(false);
+//        }
     }
 
     /**
@@ -522,6 +571,20 @@ public class MainActivity extends FragmentActivity {
                 musicBinder.seekTo(seekBar.getProgress());
             }
         });
+        bbSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                musicBinder.seekTo(seekBar.getProgress());
+            }
+        });
 
 
     }
@@ -574,10 +637,11 @@ public class MainActivity extends FragmentActivity {
      * @param context
      */
     private void setStartPlay(Context context) {
-        if (animator!=null) {
-            animator.end();//TODO 测试动画
+        if (animator != null) {
+            animator.end();
         }
         // 显示暂停按钮
+        bbIVPlayOrPause.setImageResource(R.mipmap.appwidget_icon_pause_normal);
         ivPMPlayOrPause.setImageResource(R.mipmap.appwidget_icon_pause_normal);
         //获取到当前正在播放的music对象
         app = (MusicApplication) getApplication();
@@ -592,10 +656,11 @@ public class MainActivity extends FragmentActivity {
         }
         //        tvPMSinger.setText(music.getArtist_name());
         tvPMSinger.setText(music.getSongInfo().getAuthor());
+        tvCMSinger.setText(music.getSongInfo().getAuthor());
         //更新专辑图片ivPMAlbum
-//        String albumPath = music.getSongInfo().getAlbum_500_500();
+        //        String albumPath = music.getSongInfo().getAlbum_500_500();
         String albumPath = music.getSongInfo().getPic_radio();
-        LogUtil.i("TAG","getAlbum_500_500()="+albumPath);
+        LogUtil.i("TAG", "getAlbum_500_500()=" + albumPath);
         // 通过输入流直接加载
         BitmapUtils.loadBitmap(context, albumPath, 0, 0, new BitmapUtils.BitmapCallback() {
             @Override
@@ -608,9 +673,9 @@ public class MainActivity extends FragmentActivity {
             }
         });
         //更新背景图片ivPMBackground
-//        String backgroundPath = music.getSongInfo().getArtist_480_800();
+        //        String backgroundPath = music.getSongInfo().getArtist_480_800();
         String backgroundPath = music.getSongInfo().getArtist_500_500();
-        LogUtil.i("TAG","getArtist_480_800()="+backgroundPath);
+        LogUtil.i("TAG", "getArtist_480_800()=" + backgroundPath);
         if ("".equals(backgroundPath)) {
             backgroundPath = music.getSongInfo().getArtist_640_1136();
         }
@@ -680,7 +745,9 @@ public class MainActivity extends FragmentActivity {
         int currentPosition = intent.getIntExtra(GlobalConsts.MUSIC_CURRENT_POSITION, 0);
         int duration = intent.getIntExtra(GlobalConsts.MUSIC_DURATION, 0);
         seekBar.setMax(duration);
+        bbSeekBar.setMax(duration);
         seekBar.setProgress(currentPosition);
+        bbSeekBar.setProgress(currentPosition);
         //更新两个textView
         tvPMCurrentTime.setText(sdf.format(new Date(currentPosition)));
         tvPMTotalTime.setText(sdf.format(new Date(duration)));

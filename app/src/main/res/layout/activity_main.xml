@@ -78,13 +78,12 @@
 
     </android.support.v4.view.ViewPager>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:background="@color/text_background"
-        android:orientation="horizontal"
         android:padding="5dp"
         >
 
@@ -97,16 +96,72 @@
             android:src="@mipmap/ic_launcher"
             />
 
+        <SeekBar
+            android:id="@+id/bbSeekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="-5dp"
+            android:layout_marginTop="-10dp"
+            android:layout_toRightOf="@+id/ivCMPic"
+            android:indeterminate="false"/>
+
         <TextView
             android:id="@+id/tvCMTitle"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/ivCMPic"
+            android:layout_marginLeft="16dp"
+            android:layout_below="@+id/bbSeekBar"
+            android:layout_marginTop="-12dp"
             android:gravity="center_vertical"
-            android:text="当前播放歌曲的名称"
+            android:text="歌曲的名称"
             android:textColor="@color/cm_music_title"
             android:textSize="16sp"/>
-    </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvCMSinger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tvCMTitle"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/tvCMTitle"
+            android:gravity="center_vertical"
+            android:text="歌曲的作者"
+            android:textColor="@color/cm_music_singer"
+            android:textSize="12sp"/>
+
+        <ImageView
+            android:id="@+id/bbIVPlayList"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/bbSeekBar"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="-5dp"
+            android:src="@mipmap/music_list"
+            android:onClick="doClick"
+            android:nestedScrollingEnabled="false"/>
+
+        <ImageView
+            android:id="@+id/bbIVNext"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignTop="@+id/bbIVPlayList"
+            android:layout_marginRight="20dp"
+            android:layout_toLeftOf="@+id/bbIVPlayList"
+            android:src="@mipmap/_icon_play_next_normal"
+            android:onClick="doClick"/><ImageView
+            android:id="@+id/bbIVPlayOrPause"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignTop="@+id/bbIVPlayList"
+            android:layout_marginRight="20dp"
+            android:layout_toLeftOf="@+id/bbIVNext"
+            android:src="@mipmap/appwidget_icon_play_normal"
+            android:onClick="doClick"/>
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/rlPlayMusic"
@@ -198,7 +253,7 @@
             android:layout_width="match_parent"
             android:layout_height="36dp"
             android:layout_below="@id/tvPMLrc1"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="24dp"
             android:gravity="center_vertical">
 
             <ImageView
@@ -206,25 +261,25 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_centerHorizontal="true"
-                android:src="@android:drawable/stat_sys_download"
+                android:nestedScrollingEnabled="false"
                 android:onClick="doClick"
-                android:nestedScrollingEnabled="false"/>
+                android:src="@android:drawable/stat_sys_download"/>
 
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginRight="40dp"
                 android:layout_toLeftOf="@+id/ivDownload"
-                android:src="@android:drawable/btn_star_big_on"
-                android:onClick="doClick"/>
+                android:onClick="doClick"
+                android:src="@android:drawable/btn_star_big_on"/>
 
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginLeft="40dp"
                 android:layout_toRightOf="@+id/ivDownload"
-                android:src="@android:drawable/ic_menu_share"
-                android:onClick="doClick"/>
+                android:onClick="doClick"
+                android:src="@android:drawable/ic_menu_share"/>
 
         </RelativeLayout>
 
@@ -383,5 +438,15 @@
             android:layout_below="@+id/linearLayout1">
         </ListView>
     </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottomBar"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="106dp"
+        android:layout_marginBottom="144dp">
+    </LinearLayout>
 
 </RelativeLayout>
